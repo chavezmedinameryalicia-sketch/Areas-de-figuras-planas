@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reto de Áreas - Figuras Planas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+
+        .welcome-screen, .game-screen, .results-screen {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .input-group {
+            margin: 30px 0;
+        }
+
+        label {
+            display: block;
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.3em;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+            margin: 10px 5px;
+        }
+
+        .btn-back {
+            background: #ed8936;
+            color: white;
+            margin: 10px 5px;
+        }
+
+        .btn-finish {
+            background: #e53e3e;
+            color: white;
+            margin: 10px 5px;
+        }
+
+        .score-panel {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            color: white;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .problem-container {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 3px solid #e2e8f0;
+        }
+
+        .problem-text {
+            font-size: 1.2em;
+            color: #2d3748;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .figure-display {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .figure-item {
+            text-align: center;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .figure-item svg {
+            width: 150px;
+            height: 150px;
+        }
+
+        .figure-label {
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .feedback {
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            text-align: center;
+            animation: pulse 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .feedback.success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 3px solid #48bb78;
+        }
+
+        .feedback.error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 3px solid #fc8181;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f00;
+            position: absolute;
+            animation: confetti-fall 3s linear;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .results-summary {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .results-summary h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .results-summary .stat {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Pantalla de Bienvenida -->
+        <div id="welcomeScreen" class="welcome-screen">
+            <h1>🎯 Reto de Áreas</h1>
+            <p class="subtitle">Figuras Planas - 5to Grado</p>
+            <div class="input-group">
+                <label for="studentName">👨‍🎓 Ingresa tu Nombre Completo:</label>
+                <input type="text" id="studentName" placeholder="Ejemplo: Juan Pérez García">
+            </div>
+            <button class="btn btn-primary" onclick="startGame()">¡Comenzar el Reto!</button>
+        </div>
+
+        <!-- Pantalla de Juego -->
+        <div id="gameScreen" class="game-screen hidden">
+            <div class="score-panel">
+                <div>📊 Problema: <span id="problemNumber">1</span></div>
+                <div>✅ Correctos: <span id="correctCount">0</span></div>
+                <div>⭐ Puntos: <span id="score">0</span></div>
+            </div>
+
+            <div class="problem-container">
+                <div class="problem-text" id="problemText"></div>
+                <div class="figure-display" id="figureDisplay"></div>
+                
+                <div class="input-group">
+                    <label for="answer">Tu respuesta (solo el número):</label>
+                    <input type="number" id="answer" step="0.01" placeholder="Ejemplo: 25.5">
+                </div>
+
+                <button class="btn btn-secondary" onclick="checkAnswer()">✓ Verificar Respuesta</button>
+            </div>
+
+            <div id="feedback"></div>
+
+            <div class="button-group">
+                <button class="btn btn-back" onclick="previousProblem()">⬅ Problema Anterior</button>
+                <button class="btn btn-secondary" onclick="nextProblem()">Siguiente Problema ➡</button>
+                <button class="btn btn-finish" onclick="finishGame()">🏁 Finalizar Reto</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Resultados -->
+        <div id="resultsScreen" class="results-screen hidden">
+            <h1>🎉 ¡Reto Completado!</h1>
+            <div class="results-summary">
+                <h2>Resultados de <span id="finalName"></span></h2>
+                <div class="stat">📝 Problemas resueltos: <span id="totalProblems"></span></div>
+                <div class="stat">✅ Respuestas correctas: <span id="finalCorrect"></span></div>
+                <div class="stat">⭐ Puntaje total: <span id="finalScore"></span> puntos</div>
+            </div>
+            <button class="btn btn-primary" onclick="exportToExcel()">📥 Descargar Reporte XLSX</button>
+            <button class="btn btn-secondary" onclick="resetGame()">🔄 Jugar Nuevamente</button>
+        </div>
+    </div>
+
+    <script>
+        let studentName = '';
+        let currentProblem = 0;
+        let score = 0;
+        let correctCount = 0;
+        let problems = [];
+        let studentAnswers = [];
+
+        const problemTemplates = [
+            {
+                text: "Don Pedro está construyendo un corral para sus cuyes. El corral tiene forma rectangular con {l1} metros de largo y {l2} metros de ancho. Además, construyó un techo triangular con base de {b} metros y altura de {h} metros. ¿Cuántos {unit} necesita en total?",
+                figures: ['rectangulo', 'triangulo'],
+                unit: 'm²',
+                calculate: (vars) => vars.l1 * vars.l2 + (vars.b * vars.h) / 2
+            },
+            {
+                text: "La familia Ramírez está sembrando papas. Tienen un terreno cuadrado de {l} metros de lado y otro terreno rectangular de {l1} metros por {l2} metros. ¿Cuál es el área total disponible para sembrar en {unit}?",
+                figures: ['cuadrado', 'rectangulo'],
+                unit: 'm²',
+                calculate: (vars) => vars.l * vars.l + vars.l1 * vars.l2
+            },
+            {
+                text: "María está decorando su casa con mosaicos. La pared de su cocina es un rectángulo de {l1} cm de ancho y {l2} cm de alto. Quiere agregar un diseño en forma de rombo con diagonales de {d1} cm y {d2} cm. ¿Cuántos {unit} cubrirá en total?",
+                figures: ['rectangulo', 'rombo'],
+                unit: 'cm²',
+                calculate: (vars) => vars.l1 * vars.l2 + (vars.d1 * vars.d2) / 2
+            },
+            {
+                text: "El profesor dibujó en la pizarra un paralelogramo con base de {b} cm y altura de {h} cm, y un triángulo con base de {b2} cm y altura de {h2} cm. ¿Cuál es el área total de ambas figuras en {unit}?",
+                figures: ['paralelogramo', 'triangulo'],
+                unit: 'cm²',
+                calculate: (vars) => vars.b * vars.h + (vars.b2 * vars.h2) / 2
+            },
+            {
+                text: "Don José está techando su casa. El techo tiene forma de trapecio con base mayor de {bm} metros, base menor de {bn} metros y altura de {h} metros. También construirá un cuarto cuadrado de {l} metros de lado. ¿Cuántos {unit} de techo necesita en total?",
+                figures: ['trapecio', 'cuadrado'],
+                unit: 'm²',
+                calculate: (vars) => ((vars.bm + vars.bn) * vars.h) / 2 + vars.l * vars.l
+            },
+            {
+                text: "Ana está pintando dos paredes: una rectangular de {l1} metros por {l2} metros y otra en forma de triángulo con base {b} metros y altura {h} metros. ¿Cuántos {unit} necesita pintar en total?",
+                figures: ['rectangulo', 'triangulo'],
+                unit: 'm²',
+                calculate: (vars) => vars.l1 * vars.l2 + (vars.b * vars.h) / 2
+            },
+            {
+                text: "En el huerto escolar hay un jardín en forma de rombo con diagonales de {d1} metros y {d2} metros, y un camino rectangular de {l1} metros de largo y {l2} metros de ancho. ¿Cuál es el área total en {unit}?",
+                figures: ['rombo', 'rectangulo'],
+                unit: 'm²',
+                calculate: (vars) => (vars.d1 * vars.d2) / 2 + vars.l1 * vars.l2
+            },
+            {
+                text: "El carpintero está haciendo una puerta con forma de rectángulo de {l1} cm de ancho y {l2} cm de alto, con una ventana triangular en la parte superior de base {b} cm y altura {h} cm. ¿Cuál es el área total del diseño en {unit}?",
+                figures: ['rectangulo', 'triangulo'],
+                unit: 'cm²',
+                calculate: (vars) => vars.l1 * vars.l2 + (vars.b * vars.h) / 2
+            }
+        ];
+
+        function generateRandomValue(min, max, decimals = 0) {
+            const value = Math.random() * (max - min) + min;
+            return decimals > 0 ? parseFloat(value.toFixed(decimals)) : Math.floor(value);
+        }
+
+        function generateProblem() {
+            const template = problemTemplates[Math.floor(Math.random() * problemTemplates.length)];
+            const isMetric = template.unit === 'm²';
+            
+            const vars = {
+                l: generateRandomValue(3, 10),
+                l1: generateRandomValue(isMetric ? 3 : 50, isMetric ? 12 : 150),
+                l2: generateRandomValue(isMetric ? 3 : 50, isMetric ? 12 : 150),
+                b: generateRandomValue(isMetric ? 4 : 30, isMetric ? 10 : 100),
+                h: generateRandomValue(isMetric ? 3 : 20, isMetric ? 8 : 80),
+                b2: generateRandomValue(isMetric ? 3 : 30, isMetric ? 10 : 100),
+                h2: generateRandomValue(isMetric ? 3 : 20, isMetric ? 8 : 80),
+                d1: generateRandomValue(isMetric ? 4 : 40, isMetric ? 10 : 120),
+                d2: generateRandomValue(isMetric ? 4 : 40, isMetric ? 10 : 120),
+                bm: generateRandomValue(6, 12),
+                bn: generateRandomValue(3, 6)
+            };
+
+            let text = template.text;
+            for (let key in vars) {
+                text = text.replace(`{${key}}`, vars[key]);
+            }
+            text = text.replace('{unit}', template.unit);
+
+            const answer = parseFloat(template.calculate(vars).toFixed(2));
+
+            return {
+                text: text,
+                figures: template.figures,
+                unit: template.unit,
+                answer: answer,
+                vars: vars
+            };
+        }
+
+        function drawFigure(type, vars, unit) {
+            const isMetric = unit === 'm²';
+            const unitLabel = isMetric ? 'm' : 'cm';
+            
+            switch(type) {
+                case 'triangulo':
+                    return `
+                        <div class="figure-item">
+                            <svg viewBox="0 0 200 180">
+                                <polygon points="100,20 20,160 180,160" fill="#ffd89b" stroke="#333" stroke-width="2"/>
+                                <text x="100" y="175" text-anchor="middle" font-size="14">${vars.b || vars.b2} ${unitLabel}</text>
+                                <text x="10" y="90" text-anchor="middle" font-size="14">${vars.h || vars.h2} ${unitLabel}</text>
+                            </svg>
+                            <div class="figure-label">Triángulo</div>
+                        </div>
+                    `;
+                case 'cuadrado':
+                    return `
+                        <div class="figure-item">
+                            <svg viewBox="0 0 200 200">
+                                <rect x="40" y="40" width="120" height="120" fill="#a8e6cf" stroke="#333" stroke-width="2"/>
+                                <text x="100" y="180" text-anchor="middle" font-size="14">${vars.l} ${unitLabel}</text>
+                            </svg>
+                            <div class="figure-label">Cuadrado</div>
+                        </div>
+                    `;
+                case 'rectangulo':
+                    return `
+                        <div class="figure-item">
+                            <svg viewBox="0 0 220 180">
+                                <rect x="30" y="50" width="160" height="90" fill="#ffb6c1" stroke="#333" stroke-width="2"/>
+                                <text x="110" y="160" text-anchor="middle" font-size="14">${vars.l1} ${unitLabel}</text>
+                                <text x="10" y="95" text-anchor="middle" font-size="14">${vars.l2} ${unitLabel}</text>
+                            </svg>
+                            <div class="figure-label">Rectángulo</div>
+                        </div>
+                    `;
+                case 'paralelogramo':
+                    return `
+                        <div class="figure-item">
+                            <svg viewBox="0 0 220 180">
+                                <polygon points="60,50 180,50 160,130 40,130" fill="#dda0dd" stroke="#333" stroke-width="2"/>
+                                <text x="120" y="155" text-anchor="middle" font-size="14">${vars.b} ${unitLabel}</text>
+                                <line x1="180" y1="50" x2="180" y2="130" stroke="#e53e3e" stroke-width="2" stroke-dasharray="5,5"/>
+                                <text x="195" y="90" text-anchor="middle" font-size="14">${vars.h} ${unitLabel}</text>
+                            </svg>
+                            <div class="figure-label">Paralelogramo</div>
+                        </div>
+                    `;
+                case 'rombo':
+                    return `
+                        <div class="figure-item">
+                            <svg viewBox="0 0 200 200">
+                                <polygon points="100,20 170,100 100,180 30,100" fill="#87ceeb" stroke="#333" stroke-width="2"/>
+                                <line x1="30" y1="100" x2="170" y2="100" stroke="#e53e3e" stroke-width="2" stroke-dasharray="5,5"/>
+                                <line x1="100" y1="20" x2="100" y2="180" stroke="#e53e3e" stroke-width="2" stroke-dasharray="5,5"/>
+                                <text x="100" y="15" text-anchor="middle" font-size="12">d1=${vars.d1}${unitLabel}</text>
+                                <text x="180" y="105" text-anchor="start" font-size="12">d2=${vars.d2}${unitLabel}</text>
+                            </svg>
+                            <div class="figure-label">Rombo</div>
+                        </div>
+                    `;
+                case 'trapecio':
+                    return `
+                        <div class="figure-item">
+                            <svg viewBox="0 0 220 180">
+                                <polygon points="50,50 170,50 200,140 20,140" fill="#f0e68c" stroke="#333" stroke-width="2"/>
+                                <text x="110" y="45" text-anchor="middle" font-size="14">${vars.bn} ${unitLabel}</text>
+                                <text x="110" y="165" text-anchor="middle" font-size="14">${vars.bm} ${unitLabel}</text>
+                                <line x1="170" y1="50" x2="170" y2="140" stroke="#e53e3e" stroke-width="2" stroke-dasharray="5,5"/>
+                                <text x="185" y="95" text-anchor="middle" font-size="14">${vars.h} ${unitLabel}</text>
+                            </svg>
+                            <div class="figure-label">Trapecio</div>
+                        </div>
+                    `;
+            }
+        }
+
+        function startGame() {
+            studentName = document.getElementById('studentName').value.trim();
+            if (!studentName) {
+                alert('Por favor, ingresa tu nombre completo');
+                return;
+            }
+
+            // Generar 10 problemas
+            problems = [];
+            for (let i = 0; i < 10; i++) {
+                problems.push(generateProblem());
+            }
+            studentAnswers = new Array(10).fill(null);
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            displayProblem();
+        }
+
+        function displayProblem() {
+            const problem = problems[currentProblem];
+            document.getElementById('problemNumber').textContent = currentProblem + 1;
+            document.getElementById('problemText').textContent = problem.text;
+            
+            const figureDisplay = document.getElementById('figureDisplay');
+            figureDisplay.innerHTML = problem.figures.map(fig => 
+                drawFigure(fig, problem.vars, problem.unit)
+            ).join('');
+
+            document.getElementById('answer').value = studentAnswers[currentProblem] || '';
+            document.getElementById('feedback').innerHTML = '';
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseFloat(document.getElementById('answer').value);
+            const problem = problems[currentProblem];
+            const feedback = document.getElementById('feedback');
+
+            if (isNaN(userAnswer)) {
+                alert('Por favor, ingresa un número válido');
+                return;
+            }
+
+            studentAnswers[currentProblem] = userAnswer;
+
+            const isCorrect = Math.abs(userAnswer - problem.answer) < 0.1;
+
+            if (isCorrect) {
+                if (studentAnswers.filter(a => a !== null).length === currentProblem + 1) {
+                    score += 10;
+                    correctCount++;
+                    document.getElementById('score').textContent = score;
+                    document.getElementById('correctCount').textContent = correctCount;
+                }
+
+                feedback.className = 'feedback success';
+                feedback.innerHTML = '🎉 ¡Excelente cálculo! ¡Lo lograste! +10 puntos';
+                createConfetti();
+            } else {
+                feedback.className = 'feedback error';
+                feedback.innerHTML = `
+                    ¡Buen intento! 💪<br>
+                    La respuesta correcta es <strong>${problem.answer} ${problem.unit}</strong><br>
+                    Recuerda las fórmulas y vuelve a intentarlo. ¡La próxima lo lograrás!
+                `;
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.top = '0px';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
+        function previousProblem() {
+            if (currentProblem > 0) {
+                currentProblem--;
+                displayProblem();
+            }
+        }
+
+        function nextProblem() {
+            if (currentProblem < problems.length - 1) {
+                currentProblem++;
+                displayProblem();
+            }
+        }
+
+        function finishGame() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            document.getElementById('finalName').textContent = studentName;
+            document.getElementById('totalProblems').textContent = problems.length;
+            document.getElementById('finalCorrect').textContent = correctCount;
+            document.getElementById('finalScore').textContent = score;
+        }
+
+        function exportToExcel() {
+            const data = {
+                nombre: studentName,
+                correctos: correctCount,
+                puntaje: score,
+                fecha: new Date().toLocaleDateString('es-PE')
+            };
+
+            // Crear CSV
+            const csv = `Nombre del Estudiante,Ejercicios Correctos,Puntaje Total,Fecha\n${data.nombre},${data.correctos},${data.puntaje},${data.fecha}`;
+            
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Reporte_${studentName.replace(/ /g, '_')}_${Date.now()}.csv`;
+            link.click();
+
+            // También enviar a Google Apps Script (descomentar y agregar tu URL)
+            // fetch('TU_URL_DE_GOOGLE_APPS_SCRIPT', {
+            //     method: 'POST',
+            //     body: JSON.stringify(data)
+            // });
+        }
+
+        function resetGame() {
+            currentProblem = 0;
+            score = 0;
+            correctCount = 0;
+            problems = [];
+            studentAnswers = [];
+            
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            document.getElementById('studentName').value = '';
+        }
+    </script>
+</body>
+</html>
